@@ -16,8 +16,17 @@ class Notifier
 {
     public static function sendPush(string $heading, string $content, array $player_ids, array $extra = null)
     {
-        // dispatch(new SendPushJob(new OneSignalProvider(), $heading, $content, $player_ids, $extra));
-        dispatch(new SendPushJob(new ChabokProvider(), $heading, $content, $player_ids, $extra));
+
+        switch (config('notifier.push_providers_priority')) {
+            case "onesignal":
+                dispatch(new SendPushJob(new OneSignalProvider(), $heading, $content, $player_ids, $extra));
+                break;
+            case "chabok":
+                dispatch(new SendPushJob(new ChabokProvider(), $heading, $content, $player_ids, $extra));
+                break;
+        }
+
+
 
         return true;
     }

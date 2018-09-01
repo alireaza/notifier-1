@@ -13,13 +13,13 @@ class SmsIrProvider extends SmsAbstract
     public function getToken()
     {
         $request = [
-            "UserApiKey" => SmsConfigs::SMSIR_API_KEY,
-            "SecretKey" => SmsConfigs::SMSIR_SECRET_KEY,
+            "UserApiKey" => config('notifier.sms.smsir.api_key'),
+            "SecretKey" => config('notifier.sms.smsir.secret_key'),
             "System" => "laravel_v_1_4",
         ];
 
         $response = $this->post(
-            SmsConfigs::SMSIR_TOKEN,
+            config('notifier.sms.smsir.token'),
             ["json" => $request]
         );
 
@@ -35,7 +35,7 @@ class SmsIrProvider extends SmsAbstract
         $body = [
             "Messages" => $messages,
             "MobileNumbers" => $numbers,
-            "LineNumber" => SmsConfigs::SMSIR_LINE_NUMBER,
+            "LineNumber" => config('notifier.sms.smsir.line_number'),
         ];
 
         if($datetime) {
@@ -47,7 +47,7 @@ class SmsIrProvider extends SmsAbstract
         ];
 
         $this->post(
-            SmsConfigs::SMSIR_URI,
+            config('notifier.sms.smsir.uri'),
             [
                 "json" => $body,
                 "headers" => $headers

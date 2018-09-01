@@ -24,7 +24,9 @@ class NotifierServiceProvider extends ServiceProvider
     public function register()
     {
         include_once __DIR__ . "/routes/web.php";
-
         include_once __DIR__ . "/Notifier.php";
+        
+        $this->mergeConfigFrom(__DIR__.'/Config/notifier.php' , 'notifier');
+        
     }
 }

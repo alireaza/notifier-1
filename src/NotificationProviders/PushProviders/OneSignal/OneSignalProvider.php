@@ -23,7 +23,7 @@ class OneSignalProvider extends PushAbstract
     public function send(string $heading, string $content, array $player_ids, $extra = null)
     {
         $request = [
-            "app_id" => PushConfigs::ONESIGNAL_APP_ID,
+            "app_id" => config('notifier.push.onesignal.app_id'),
             "extra" => $extra,
             "headings" => ["en" => $heading],
             "contents" => ["en" => $content]
@@ -31,7 +31,7 @@ class OneSignalProvider extends PushAbstract
 
         $headers = [
             "Content-Type" => "application/json; charset=utf-8",
-            "Authorization" => "Basic " . PushConfigs::ONESIGNAL_AUTHORIZATION
+            "Authorization" => "Basic " . config('notifier.push.onesignal.authorization')
         ];
 
         $player_ids_chunks = array_chunk($player_ids, 2000);
@@ -40,7 +40,7 @@ class OneSignalProvider extends PushAbstract
             $request["include_player_ids"] = $player_ids;
 
             $response = $this->post(
-                PushConfigs::ONESIGNAL_URI,
+                config('notifier.push.onesignal.uri'),
                 [
                     "headers" => $headers,
                     "body" => json_encode($request)

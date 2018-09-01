@@ -2,7 +2,6 @@
 
 namespace Asanbar\Notifier\NotificationProviders\PushProviders\Chabok;
 
-use Asanbar\Notifier\Constants\PushConfigs;
 use Asanbar\Notifier\NotificationProviders\PushProviders\PushAbstract;
 use Asanbar\Notifier\Traits\RestConnector;
 
@@ -27,10 +26,9 @@ class ChabokProvider extends PushAbstract
 
         $player_ids_chunks = array_chunk($player_ids, 2000);
 
+        $uri = $this->getUri();
         foreach ($player_ids_chunks as $player_ids) {
             $message["user"] = $player_ids;
-            $uri = $this->getUri();
-
             return $this->post(
                 $uri,
                 [
@@ -61,17 +59,17 @@ class ChabokProvider extends PushAbstract
         return [
             "Content-Type" => "application/json; charset=utf-8",
             "accept" => "application/json",
-            // "Authorization" => "Basic " . PushConfigs::CHABOK_AUTHORIZATION
+            // "Authorization" => "Basic " . config('notifier.push.chabok.access_token')
         ];
     }
 
     private function getUri(): string
     {
-        $baseUri = PushConfigs::CHABOK_URL;
+        $baseUri = config('notifier.push.chabok.uri');
         if (config('app.env') !== "production") {
-            $baseUri = PushConfigs::CHABOK_URL_DEV;
+            $baseUri = config('notifier.push.chabok.uri_dev');
         }
-        return $baseUri . "push/toUsers?access_token=" . PushConfigs::CHABOK_ACCESS_TOKEN;
+        return $baseUri . "push/toUsers?access_token=" .  config('notifier.push.chabok.access_token');
     }
 
 }
