@@ -90,6 +90,7 @@ class ChabokProvider extends PushAbstract
         if (config('app.env') !== "production") {
             $baseUri = config('notifier.push.chabok.uri_dev');
         }
+
         return $baseUri . "push/toUsers?access_token=" . config('notifier.push.chabok.access_token');
     }
 
