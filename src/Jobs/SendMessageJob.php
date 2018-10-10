@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Carbon\Carbon;
 
 class SendMessageJob implements ShouldQueue
 {
@@ -17,6 +18,7 @@ class SendMessageJob implements ShouldQueue
     protected $title;
     protected $body;
     protected $user_ids;
+    protected $expire_at;
 
     /**
      * Create a new job instance.
@@ -24,12 +26,14 @@ class SendMessageJob implements ShouldQueue
      * @param $title
      * @param $body
      * @param $user_ids
+     * @param int $expire_at
      */
-    public function __construct($title, $body, $user_ids)
+    public function __construct($title, $body, $user_ids, int $expire_at = 0)
     {
         $this->title = $title;
         $this->body = $body;
         $this->user_ids = $user_ids;
+        $this->expire_at = $expire_at > 0 ? Carbon::now()->addSeconds($expire_at) : 0;
     }
 
     /**
@@ -39,6 +43,8 @@ class SendMessageJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->sendMessage();
+        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) {
+            $this->sendMessage();
+        }
     }
 }

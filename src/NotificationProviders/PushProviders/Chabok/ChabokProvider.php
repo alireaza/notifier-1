@@ -17,15 +17,16 @@ class ChabokProvider extends PushAbstract
      * @param string $content
      * @param array $player_ids
      * @param null $extra
+     * @param int $expire_at
      * @return array
      */
-    public function send(string $content, string $heading, array $player_ids, $extra = null) : array
+    public function send(string $heading, string $content, array $player_ids, $extra = null, int $expire_at = 0) : array
     {
         $messages = [];
         $headers = $this->getHeaders();
 
         foreach ($player_ids as $key => $player_id) {
-            $messages[$key] = $this->getMessage($content, $heading, $extra);
+            $messages[$key] = $this->getMessage($content, $heading, $extra, $expire_at);
             $messages[$key]["user"] = $player_id;
         }
 
@@ -48,7 +49,7 @@ class ChabokProvider extends PushAbstract
     }
 
 
-    private function getMessage(string $content, string $heading, $extra = null) : array
+    private function getMessage(string $heading, string $content, $extra = null, int $expire_at = 0) : array
     {
         return [
             "channel" => "",
@@ -57,7 +58,8 @@ class ChabokProvider extends PushAbstract
             "notification" => [
                 "title" => $heading,
                 "body" => $content
-            ]
+            ],
+            "ttl" => $expire_at,
         ];
     }
 

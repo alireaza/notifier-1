@@ -22,9 +22,10 @@ class OnesignalProvider extends PushAbstract
      * @param string $content
      * @param array $player_ids
      * @param null $extra
+     * @param int $expire_at
      * @return bool
      */
-    public function send(string $heading, string $content, array $player_ids, $extra = null)
+    public function send(string $heading, string $content, array $player_ids, $extra = null, int $expire_at = 0)
     {
         $request = [
             "app_id" => config("notifier.push.onesignal.app_id"),

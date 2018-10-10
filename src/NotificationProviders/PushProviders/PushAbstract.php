@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 abstract class PushAbstract implements PushInterface
 {
-    abstract function send(string $heading, string $content, array $player_ids, $extra = null);
+    abstract function send(string $heading, string $content, array $player_ids, $extra = null, int $expire_at = 0);
 
     public static final function resolve($provider)
     {

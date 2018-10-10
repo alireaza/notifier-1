@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Carbon\Carbon;
 
 class SendPushJob implements ShouldQueue
 {
@@ -18,6 +19,7 @@ class SendPushJob implements ShouldQueue
     protected $content;
     protected $player_ids;
     protected $data;
+    protected $expire_at;
 
     /**
      * Create a new job instance.
@@ -26,13 +28,15 @@ class SendPushJob implements ShouldQueue
      * @param string $content
      * @param array $player_ids
      * @param array $extra
+     * @param int $expire_at
      */
-    public function __construct($heading, $content, $player_ids, $extra = null)
+    public function __construct($heading, $content, $player_ids, $extra = null, int $expire_at = 0)
     {
         $this->heading = $heading;
         $this->content = $content;
         $this->player_ids = $player_ids;
         $this->data = $extra;
+        $this->expire_at = $expire_at > 0 ? Carbon::now()->addSeconds($expire_at) : 0;
     }
 
     /**
@@ -42,6 +46,8 @@ class SendPushJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->sendPush();
+        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) {
+            $this->sendPush();
+        }
     }
 }
