@@ -4,7 +4,6 @@ namespace Asanbar\Notifier\NotificationProviders\PushProviders\Chabok;
 
 use Asanbar\Notifier\NotificationProviders\PushProviders\PushAbstract;
 use Asanbar\Notifier\Traits\RestConnector;
-use Illuminate\Support\Facades\Log;
 
 class ChabokProvider extends PushAbstract
 {
@@ -19,15 +18,16 @@ class ChabokProvider extends PushAbstract
      * @param string $content
      * @param array $player_ids
      * @param array|NULL $extra
-     * @return mixed
+     * @param int $expire_at
+     * @return array
      */
-    public function send(string $heading, string $content, array $player_ids, array $extra = NULL): array
+    public function send(string $heading, string $content, array $player_ids, array $extra = NULL, int $expire_at = 0): array
     {
         $messages = [];
         $headers  = $this->getHeaders();
 
         foreach ($player_ids as $key => $player_id) {
-            $messages[$key]         = $this->getMessage($content, $heading, $extra);
+            $messages[$key]         = $this->getMessage($content, $heading, $extra, $expire_at);
             $messages[$key]["user"] = $player_id;
         }
 
@@ -55,11 +55,10 @@ class ChabokProvider extends PushAbstract
         return [
             "Content-Type" => "application/json; charset=utf-8",
             "accept"       => "application/json",
-            // "Authorization" => "Basic " . config('notifier.push.chabok.access_token')
         ];
     }
 
-    private function getMessage(string $heading, string $content, $extra = NULL): array
+    private function getMessage(string $heading, string $content, $extra = NULL, int $expire_at = 0): array
     {
         $message = [
             "channel"      => "",
@@ -69,6 +68,7 @@ class ChabokProvider extends PushAbstract
                 "title" => $heading,
                 "body"  => $content,
             ],
+            "ttl"          => $expire_at,
         ];
 
         if ($this->fallback) {
@@ -95,9 +95,9 @@ class ChabokProvider extends PushAbstract
 
     /**
      * @param array $options
-     * @return $this
+     * @return self
      */
-    function options(array $options)
+    public function options(array $options)
     {
         if (array_key_exists('fallback', $options)) {
             $this->fallback = $options['fallback'];

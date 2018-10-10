@@ -3,11 +3,12 @@
 namespace Asanbar\Notifier\Jobs;
 
 use Asanbar\Notifier\Traits\SmsTrait;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class SendSmsJob implements ShouldQueue
 {
@@ -17,6 +18,7 @@ class SendSmsJob implements ShouldQueue
     private $message;
     private $numbers;
     private $datetime;
+    private $expire_at;
     private $options;
 
     /**
@@ -24,13 +26,15 @@ class SendSmsJob implements ShouldQueue
      *
      * @param string $message
      * @param array $numbers
+     * @param int $expire_at
      * @param array $options
      */
-    public function __construct(string $message, array $numbers, array $options = [])
+    public function __construct(string $message, array $numbers, int $expire_at = 0, array $options = [])
     {
-        $this->message = $message;
-        $this->numbers = $numbers;
-        $this->options = $options;
+        $this->message   = $message;
+        $this->numbers   = $numbers;
+        $this->expire_at = $expire_at > 0 ? Carbon::now()->addSeconds($expire_at) : 0;
+        $this->options   = $options;
     }
 
     /**
@@ -40,6 +44,8 @@ class SendSmsJob implements ShouldQueue
      */
     public function handle()
     {
-        $this->sendSms();
+        if ($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) { //if expire_at is zero or now not greater than expire_at
+            $this->sendSms();
+        }
     }
 }

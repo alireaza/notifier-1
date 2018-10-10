@@ -11,25 +11,34 @@ use Asanbar\Notifier\Models\Sms;
 
 class Notifier
 {
+    private static $expire_at = 0;
+
     private static $options = [];
 
-    public static function sendPush(string $heading, string $content, array $player_ids, array $extra = null)
+    public static function sendPush(string $heading, string $content, array $player_ids, array $extra = NULL)
     {
-        dispatch(new SendPushJob($heading, $content, $player_ids, $extra, static::$options));
+        dispatch(new SendPushJob($heading, $content, $player_ids, $extra, static::$expire_at, static::$options));
 
-        return true;
+        return TRUE;
     }
 
     public static function sendSms(string $message, array $numbers)
     {
-        dispatch(new SendSmsJob($message, $numbers, static::$options));
+        dispatch(new SendSmsJob($message, $numbers, static::$expire_at, static::$options));
 
-        return true;
+        return TRUE;
     }
 
     public static function sendMessage(string $title, string $body, array $user_ids)
     {
-        dispatch(new SendMessageJob($title, $body, $user_ids, static::$options));
+        dispatch(new SendMessageJob($title, $body, $user_ids, static::$expire_at, static::$options));
+
+        return TRUE;
+    }
+
+    public static function setExpireAt($expire_at)
+    {
+        static::$expire_at = $expire_at;
     }
 
     public static function options(array $options = [])
@@ -37,8 +46,8 @@ class Notifier
         static::$options = $options;
     }
 
-    public static function getPushes($player_ids, string $from_datetime = null, string $to_datetime = null,
-                                     $extra_field = null, array $extra_values = null)
+    public static function getPushes($player_ids, string $from_datetime = NULL, string $to_datetime = NULL,
+                                     $extra_field = NULL, array $extra_values = NULL)
     {
         return Push::getPushes(
             $player_ids,
@@ -54,7 +63,7 @@ class Notifier
         return Sms::getSmses($numbers);
     }
 
-    public static function getMessages(array $user_ids, string $status = null)
+    public static function getMessages(array $user_ids, string $status = NULL)
     {
         return Message::getMessages($user_ids, $status);
     }
