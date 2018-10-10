@@ -15,22 +15,22 @@ class SendPushJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use PushTrait;
 
-    protected $heading;
-    protected $content;
-    protected $player_ids;
-    protected $data;
-    protected $expire_at;
+    private $heading;
+    private $content;
+    private $player_ids;
+    private $data;
+    private $expire_at;
 
     /**
      * Create a new job instance.
      *
-     * @param $heading
+     * @param string $heading
      * @param string $content
      * @param array $player_ids
      * @param array $extra
      * @param int $expire_at
      */
-    public function __construct($heading, $content, $player_ids, $extra = null, int $expire_at = 0)
+    public function __construct(string $heading, string $content, array $player_ids, array $extra = null, int $expire_at = 0)
     {
         $this->heading = $heading;
         $this->content = $content;
@@ -46,7 +46,7 @@ class SendPushJob implements ShouldQueue
      */
     public function handle()
     {
-        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) {
+        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) { //if expire_at is zero or now not greater than expire_at
             $this->sendPush();
         }
     }

@@ -15,10 +15,10 @@ class SendSmsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use SmsTrait;
 
-    protected $message;
-    protected $numbers;
-    protected $datetime;
-    protected $expire_at;
+    private $message;
+    private $numbers;
+    private $datetime;
+    private $expire_at;
 
     /**
      * Create a new job instance.
@@ -27,7 +27,7 @@ class SendSmsJob implements ShouldQueue
      * @param array $numbers
      * @param int $expire_at
      */
-    public function __construct($message, $numbers, int $expire_at = 0)
+    public function __construct(string $message, array $numbers, int $expire_at = 0)
     {
         $this->message = $message;
         $this->numbers = $numbers;
@@ -41,7 +41,7 @@ class SendSmsJob implements ShouldQueue
      */
     public function handle()
     {
-        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) {
+        if($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) { //if expire_at is zero or now not greater than expire_at
             $this->sendSms();
         }
     }
