@@ -14,20 +14,23 @@ class SendSmsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use SmsTrait;
 
-    protected $message;
-    protected $numbers;
-    protected $datetime;
+    private $message;
+    private $numbers;
+    private $datetime;
+    private $options;
 
     /**
      * Create a new job instance.
      *
      * @param string $message
      * @param array $numbers
+     * @param array $options
      */
-    public function __construct($message, $numbers)
+    public function __construct(string $message, array $numbers, array $options = [])
     {
         $this->message = $message;
         $this->numbers = $numbers;
+        $this->options = $options;
     }
 
     /**

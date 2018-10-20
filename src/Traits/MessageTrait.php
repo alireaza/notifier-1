@@ -3,28 +3,35 @@
 namespace AsanBar\Notifier\Traits;
 
 use Asanbar\Notifier\Models\Message;
-use Asanbar\Notifier\Models\Push;
 use Asanbar\Notifier\NotificationProviders\MessageProviders\MessageAbstract;
 use Illuminate\Support\Facades\Log;
 
 trait MessageTrait
 {
-    protected $current_provider = null;
+    private $current_provider = NULL;
+    private $title;
+    private $body;
+    private $user_ids;
+    private $options;
 
     public function sendMessage()
     {
-        $message_providers_priority = explode(",", env("MESSAGE_PROVIDERS_PRIORITY"));
-
-        if(!$message_providers_priority) {
-            $this->logNoProvidersAvailable();
-
-            return false;
+        if (empty(env("MESSAGE_PROVIDERS_PRIORITY")) || !env("MESSAGE_PROVIDERS_PRIORITY")) {
+            return FALSE;
         }
 
-        foreach($message_providers_priority as $message_provider) {
+        $message_providers_priority = explode(",", env("MESSAGE_PROVIDERS_PRIORITY"));
+
+        if (!$message_providers_priority) {
+            $this->logNoProvidersAvailable();
+
+            return FALSE;
+        }
+
+        foreach ($message_providers_priority as $message_provider) {
             $current_provider = MessageAbstract::resolve($message_provider);
 
-            if(!$current_provider) {
+            if (!$current_provider) {
                 continue;
             }
 
@@ -36,7 +43,7 @@ trait MessageTrait
                 $this->user_ids
             );
 
-            if(isset($response["result_id"]) && $response["result_id"] != null) {
+            if (isset($response["result_id"]) && $response["result_id"] != NULL) {
                 $this->logMessageSent();
 
                 Message::createSentMessages(
@@ -61,7 +68,7 @@ trait MessageTrait
             $this->logMessageSendFailed();
         }
 
-        return false;
+        return FALSE;
     }
 
     public function logNoProvidersAvailable()

@@ -8,26 +8,31 @@ use Illuminate\Support\Facades\Log;
 
 trait PushTrait
 {
-    protected $current_provider = null;
+    private $current_provider = NULL;
+    private $heading;
+    private $content;
+    private $player_ids;
+    private $data;
+    private $options;
 
     public function sendPush()
     {
         if (empty(env("PUSH_PROVIDERS_PRIORITY")) || !env("PUSH_PROVIDERS_PRIORITY")) {
-            return false;
+            return FALSE;
         }
 
         $push_providers_priority = explode(",", env("PUSH_PROVIDERS_PRIORITY"));
 
-        if(!$push_providers_priority) {
+        if (!$push_providers_priority) {
             $this->logNoProvidersAvailable();
 
-            return false;
+            return FALSE;
         }
 
-        foreach($push_providers_priority as $push_provider) {
+        foreach ($push_providers_priority as $push_provider) {
             $current_provider = PushAbstract::resolve($push_provider);
 
-            if(!$current_provider) {
+            if (!$current_provider) {
                 continue;
             }
 
@@ -35,15 +40,16 @@ trait PushTrait
 
             $player_ids_chunks = array_chunk($this->player_ids, 2000);
 
-            foreach($player_ids_chunks as $player_ids) {
-                $response = $current_provider->send(
-                    $this->heading,
-                    $this->content,
-                    $player_ids,
-                    $this->data
-                );
+            foreach ($player_ids_chunks as $player_ids) {
+                $response = $current_provider->options($this->options)
+                                             ->send(
+                                                 $this->heading,
+                                                 $this->content,
+                                                 $player_ids,
+                                                 $this->data
+                                             );
 
-                if(isset($response["result_id"]) && $response["result_id"] != null) {
+                if (isset($response["result_id"]) && $response["result_id"] != NULL) {
                     $this->logPushSent();
 
                     Push::createSentPushes(
@@ -71,7 +77,7 @@ trait PushTrait
             }
         }
 
-        return false;
+        return FALSE;
     }
 
     public function logNoProvidersAvailable()

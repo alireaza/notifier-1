@@ -8,34 +8,43 @@ use Illuminate\Support\Facades\Log;
 
 trait SmsTrait
 {
-    protected $current_provider = null;
+    private $current_provider = NULL;
+    private $message;
+    private $numbers;
+    private $datetime;
+    private $options;
 
     public function sendSms()
     {
-        $sms_providers_priority = explode(",", env("SMS_PROVIDERS_PRIORITY"));
-
-        if(!$sms_providers_priority) {
-            $this->logNoProvidersAvailable();
-
-            return false;
+        if (empty(env("SMS_PROVIDERS_PRIORITY")) || !env("SMS_PROVIDERS_PRIORITY")) {
+            return FALSE;
         }
 
-        foreach($sms_providers_priority as $sms_provider) {
+        $sms_providers_priority = explode(",", env("SMS_PROVIDERS_PRIORITY"));
+
+        if (!$sms_providers_priority) {
+            $this->logNoProvidersAvailable();
+
+            return FALSE;
+        }
+
+        foreach ($sms_providers_priority as $sms_provider) {
             $current_provider = SmsAbstract::resolve($sms_provider);
 
-            if(!$current_provider) {
+            if (!$current_provider) {
                 continue;
             }
 
             $this->current_provider = $sms_provider;
 
-            $response = $current_provider->send(
-                $this->message,
-                $this->numbers,
-                $this->datetime
-            );
+            $response = $current_provider->options($this->options)
+                                         ->send(
+                                             $this->message,
+                                             $this->numbers,
+                                             $this->datetime
+                                         );
 
-            if(isset($response["result_id"]) && $response["result_id"] !== null) {
+            if (isset($response["result_id"]) && $response["result_id"] !== NULL) {
                 $this->logSmsSent();
 
                 Sms::createSentSmses(
@@ -46,7 +55,7 @@ trait SmsTrait
                     $response["result_id"]
                 );
 
-                return true;
+                return TRUE;
             }
 
             Sms::createSendFailedSmses(
@@ -60,7 +69,7 @@ trait SmsTrait
             $this->logSmsSendFailed();
         }
 
-        return true;
+        return TRUE;
     }
 
     public function logNoProvidersAvailable()

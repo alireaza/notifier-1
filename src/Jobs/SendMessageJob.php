@@ -14,22 +14,25 @@ class SendMessageJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use MessageTrait;
 
-    protected $title;
-    protected $body;
-    protected $user_ids;
+    private $title;
+    private $body;
+    private $user_ids;
+    private $options;
 
     /**
      * Create a new job instance.
      *
-     * @param $title
-     * @param $body
-     * @param $user_ids
+     * @param string $title
+     * @param string $body
+     * @param array $user_ids
+     * @param array $options
      */
-    public function __construct($title, $body, $user_ids)
+    public function __construct(string $title, string $body, array $user_ids, array $options = [])
     {
-        $this->title = $title;
-        $this->body = $body;
+        $this->title    = $title;
+        $this->body     = $body;
         $this->user_ids = $user_ids;
+        $this->options  = $options;
     }
 
     /**

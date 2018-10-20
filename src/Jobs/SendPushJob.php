@@ -14,25 +14,28 @@ class SendPushJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use PushTrait;
 
-    protected $heading;
-    protected $content;
-    protected $player_ids;
-    protected $data;
+    private $heading;
+    private $content;
+    private $player_ids;
+    private $data;
+    private $options;
 
     /**
      * Create a new job instance.
      *
-     * @param $heading
+     * @param string $heading
      * @param string $content
      * @param array $player_ids
      * @param array $extra
+     * @param array $options
      */
-    public function __construct($heading, $content, $player_ids, $extra = null)
+    public function __construct(string $heading, string $content, array $player_ids, array $extra = NULL, array $options = [])
     {
-        $this->heading = $heading;
-        $this->content = $content;
+        $this->heading    = $heading;
+        $this->content    = $content;
         $this->player_ids = $player_ids;
-        $this->data = $extra;
+        $this->data       = $extra;
+        $this->options    = $options;
     }
 
     /**
