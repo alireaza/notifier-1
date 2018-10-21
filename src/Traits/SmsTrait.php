@@ -12,6 +12,7 @@ trait SmsTrait
     private $message;
     private $numbers;
     private $datetime;
+    private $expire_at;
     private $options;
 
     public function sendSms()
@@ -41,7 +42,8 @@ trait SmsTrait
                                          ->send(
                                              $this->message,
                                              $this->numbers,
-                                             $this->datetime
+                                             $this->datetime,
+                                             $this->expire_at
                                          );
 
             if (isset($response["result_id"]) && $response["result_id"] !== NULL) {

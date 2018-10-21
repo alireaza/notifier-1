@@ -2,7 +2,6 @@
 
 namespace Asanbar\Notifier\NotificationProviders\PushProviders\Onesignal;
 
-use Asanbar\Notifier\Constants\PushConfigs;
 use Asanbar\Notifier\NotificationProviders\PushProviders\PushAbstract;
 use Asanbar\Notifier\Traits\RestConnector;
 use Exception;
@@ -21,11 +20,11 @@ class OnesignalProvider extends PushAbstract
      * @param string $heading
      * @param string $content
      * @param array $player_ids
-     * @param null $extra
+     * @param array|NULL $extra
      * @param int $expire_at
-     * @return bool
+     * @return array
      */
-    public function send(string $heading, string $content, array $player_ids, $extra = null, int $expire_at = 0)
+    public function send(string $heading, string $content, array $player_ids, array $extra = NULL, int $expire_at = 0): array
     {
         $request = [
             "app_id" => config("notifier.push.onesignal.app_id"),

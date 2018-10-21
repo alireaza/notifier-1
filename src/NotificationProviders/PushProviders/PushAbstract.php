@@ -41,7 +41,7 @@ abstract class PushAbstract implements PushInterface
      * @param array $options
      * @return self
      */
-    public function options(array $options)
+    public function options(array $options): self
     {
         return $this;
     }

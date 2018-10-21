@@ -12,6 +12,7 @@ trait MessageTrait
     private $title;
     private $body;
     private $user_ids;
+    private $expire_at;
     private $options;
 
     public function sendMessage()
@@ -37,11 +38,13 @@ trait MessageTrait
 
             $this->current_provider = $message_provider;
 
-            $response = $current_provider->send(
-                $this->title,
-                $this->body,
-                $this->user_ids
-            );
+            $response = $current_provider->options($this->options)
+                                         ->send(
+                                             $this->title,
+                                             $this->body,
+                                             $this->user_ids,
+                                             $this->expire_at
+                                         );
 
             if (isset($response["result_id"]) && $response["result_id"] != NULL) {
                 $this->logMessageSent();

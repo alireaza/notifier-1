@@ -12,7 +12,8 @@ trait PushTrait
     private $heading;
     private $content;
     private $player_ids;
-    private $data;
+    private $extra;
+    private $expire_at;
     private $options;
 
     public function sendPush()
@@ -46,7 +47,8 @@ trait PushTrait
                                                  $this->heading,
                                                  $this->content,
                                                  $player_ids,
-                                                 $this->data
+                                                 $this->extra,
+                                                 $this->expire_at
                                              );
 
                 if (isset($response["result_id"]) && $response["result_id"] != NULL) {
@@ -57,7 +59,7 @@ trait PushTrait
                         $player_ids,
                         $this->heading,
                         $this->content,
-                        $this->data,
+                        $this->extra,
                         $response["result_id"]
                     );
 
@@ -69,7 +71,7 @@ trait PushTrait
                     $player_ids,
                     $this->heading,
                     $this->content,
-                    $this->data,
+                    $this->extra,
                     $response
                 );
 

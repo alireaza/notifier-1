@@ -9,28 +9,35 @@ class Sms0098Provider extends SmsAbstract
 {
     use RestConnector;
 
-    public $send_uri = "http://www.0098sms.com/sendsmslink.aspx";
-    public $domain = "0098";
-    public $from;
-    protected $username;
-    protected $password;
+    private $send_uri = "http://www.0098sms.com/sendsmslink.aspx";
+    private $domain   = "0098";
+    private $from;
+    private $username;
+    private $password;
 
     public function __construct()
     {
-        $this->from = config("notifier.sms.sms0098.from");
+        $this->from     = config("notifier.sms.sms0098.from");
         $this->username = config("notifier.sms.sms0098.username");
         $this->password = config("notifier.sms.sms0098.password");
     }
 
-    public function send(string $message, array $numbers, string $datetime = null)
+    /**
+     * @param string $message
+     * @param array $numbers
+     * @param string|NULL $datetime
+     * @param int $expire_at
+     * @return array
+     */
+    public function send(string $message, array $numbers, string $datetime = NULL, int $expire_at = 0): array
     {
         $query = [
-            "FROM" => $this->from,
-            "TO" => reset($numbers),
-            "TEXT" => $message,
+            "FROM"     => $this->from,
+            "TO"       => reset($numbers),
+            "TEXT"     => $message,
             "USERNAME" => $this->username,
             "PASSWORD" => $this->password,
-            "DOMAIN" => $this->domain,
+            "DOMAIN"   => $this->domain,
         ];
 
         $response = $this->get(
@@ -38,12 +45,16 @@ class Sms0098Provider extends SmsAbstract
             $query
         );
 
-        if(substr(trim($response->getBody()->getContents()),0,1) == 0) {
+        if (substr(trim($response->getBody()
+                                 ->getContents()), 0, 1) == 0) {
             $result["result_id"] = 0;
-            $result["errors"] = null;
+            $result["errors"]    = NULL;
         } else {
-            $result["result_id"] = null;
-            $result["errors"] = [substr(trim($response->getBody()->getContents()),0,2)];
+            $result["result_id"] = NULL;
+            $result["errors"]    = [
+                substr(trim($response->getBody()
+                                     ->getContents()), 0, 2),
+            ];
         }
 
         return $result;

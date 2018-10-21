@@ -10,7 +10,7 @@ abstract class SmsAbstract implements SmsInterface
 
     /**
      * @param string $provider
-     * @return bool|SmsInterface
+     * @return bool|self
      */
     public static final function resolve(string $provider)
     {
@@ -33,15 +33,16 @@ abstract class SmsAbstract implements SmsInterface
      * @param string $message
      * @param array $numbers
      * @param string|NULL $datetime
-     * @return mixed
+     * @param int $expire_at
+     * @return array
      */
-    abstract function send(string $message, array $numbers, string $datetime = NULL);
+    abstract function send(string $message, array $numbers, string $datetime = NULL, int $expire_at = 0): array;
 
     /**
      * @param array $options
-     * @return $this
+     * @return self
      */
-    public function options(array $options)
+    public function options(array $options): self
     {
         return $this;
     }
