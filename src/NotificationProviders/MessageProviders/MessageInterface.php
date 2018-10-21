@@ -18,5 +18,5 @@ interface MessageInterface
      * @param array $options
      * @return self
      */
-    public function options(array $options): self;
+    public function options(array $options);
 }
