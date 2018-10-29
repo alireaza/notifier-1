@@ -10,9 +10,9 @@ class SmsirProvider extends SmsAbstract
 {
     use RestConnector;
 
+    public  $from;
     private $send_uri;
     private $token_uri;
-    private $from;
     private $user_api_key;
     private $secret_key;
 

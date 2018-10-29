@@ -9,9 +9,9 @@ class Sms0098Provider extends SmsAbstract
 {
     use RestConnector;
 
+    public  $from;
     private $send_uri = "http://www.0098sms.com/sendsmslink.aspx";
     private $domain   = "0098";
-    private $from;
     private $username;
     private $password;
 
