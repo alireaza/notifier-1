@@ -19,6 +19,7 @@ class SendMessageJob implements ShouldQueue
     private $body;
     private $user_ids;
     private $expire_at;
+    private $expire_at_carbon;
     private $options;
 
     /**
@@ -32,11 +33,12 @@ class SendMessageJob implements ShouldQueue
      */
     public function __construct(string $title, string $body, array $user_ids, int $expire_at = 0, array $options = [])
     {
-        $this->title     = $title;
-        $this->body      = $body;
-        $this->user_ids  = $user_ids;
-        $this->expire_at = $expire_at > 0 ? Carbon::now()->addSeconds($expire_at) : 0;
-        $this->options   = $options;
+        $this->title            = $title;
+        $this->body             = $body;
+        $this->user_ids         = $user_ids;
+        $this->expire_at        = $expire_at;
+        $this->expire_at_carbon = $expire_at > 0 ? Carbon::now()->addSeconds($expire_at) : 0;
+        $this->options          = $options;
     }
 
     /**
@@ -46,7 +48,7 @@ class SendMessageJob implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at)) { //if expire_at is zero or now not greater than expire_at
+        if ($this->expire_at === 0 || !Carbon::now()->gt($this->expire_at_carbon)) { //if expire_at is zero or now not greater than expire_at
             $this->sendMessage();
         }
     }
